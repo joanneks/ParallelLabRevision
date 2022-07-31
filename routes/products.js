@@ -145,13 +145,13 @@ router.post('/update/:poster_id',async function(req,res){
             res.redirect('/posters')
         },
         'error': async (form) => {
-            res.render('/posters/update/:poster_id',{
+            res.render('posters/update/:poster_id',{
                 'poster':poster.toJSON(),
                 'form':form.toHTML(bootstrapField)
             })
         },
         'empty': async (form) => {
-            res.render('/posters/update/:poster_id',{
+            res.render('posters/update/:poster_id',{
                 'poster':poster.toJSON(),
                 'form':form.toHTML(bootstrapField)
             })
