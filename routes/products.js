@@ -141,6 +141,7 @@ router.post('/update/:poster_id',async function(req,res){
             // add in all the tags from the form that are not in the product
             await poster.tags().attach(tagIds);
 
+            req.flash("success_messages",`Existing poster ${poster.get('name')} has been updated successfully.`)
             res.redirect('/posters')
         },
         'error': async (form) => {
