@@ -1,16 +1,22 @@
 {{#extends 'base'}}
 {{#block 'content'}}
 <h1>Posters</h1>
-<ul class="list-group-item">
     <div class="container">
         <a href="posters/create" class="btn btn-primary">Create</a>
     </div>
+<ul class="list-group-item">
     {{#each posters}}
         <li class="list-group-item">
             <h1>{{this.name}}</h1>
             <h2>Cost: {{divide this.cost 100}}</h2>
             <div>Category: {{this.category.name}}</div>
             <div>{{this.description}}</div>
+            <div>
+                <label>Badge: </label>
+                {{#each this.tags}}
+                    <span class="badge bg-primary">{{this.name}}</span>            
+                {{/each}}
+            </div>
             <a href="posters/update/{{this.id}}" class="btn btn-primary">Edit</a>
             <a href ="posters/delete/{{this.id}}" class="btn btn-danger">Delete</a>
 

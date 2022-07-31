@@ -23,11 +23,12 @@ var bootstrapField = function (name, object) {
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
-const createPosterForm = function(categories){
+const createPosterForm = function(categories,tags){
     return forms.create({
         'name': fields.string({
             required: true,
             errorAfterField: true,
+            validators:[validators.minlength(5)]
         }),
         'cost': fields.string({
             required: true,
@@ -36,7 +37,8 @@ const createPosterForm = function(categories){
         }),
         'description': fields.string({
             required: true,
-            errorAfterField: true
+            errorAfterField: true,
+            validators:[validators.minlength(5)]
         }),
         'category_id':fields.string({
             label:'Category',
@@ -44,6 +46,12 @@ const createPosterForm = function(categories){
             errorAfterField:true,
             choices:categories,
             widget:widgets.select()
+        }),
+        'tags':fields.string({
+            required:true,
+            errorAfterField:true,
+            widget:widgets.multipleSelect(),
+            choices:tags
         })
     })
 }
