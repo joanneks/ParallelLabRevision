@@ -23,7 +23,7 @@ var bootstrapField = function (name, object) {
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
-const createProductForm = function(categories){
+const createPosterForm = function(categories){
     return forms.create({
         'name': fields.string({
             required: true,
@@ -48,4 +48,4 @@ const createProductForm = function(categories){
     })
 }
 
-module.exports = {createProductForm, bootstrapField}
+module.exports = {createPosterForm, bootstrapField}

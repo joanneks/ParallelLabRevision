@@ -12,7 +12,7 @@ const Poster = bookshelf.model('Poster',{
 const Category = bookshelf.model('Category',{
     'tableName':'categories',
     product: function(){
-        return this.hasMany('Product');
+        return this.hasMany('Poster');
     }
 })
 

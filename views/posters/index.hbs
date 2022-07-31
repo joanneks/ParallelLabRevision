@@ -2,11 +2,18 @@
 {{#block 'content'}}
 <h1>Posters</h1>
 <ul class="list-group-item">
+    <div class="container">
+        <a href="posters/create" class="btn btn-primary">Create</a>
+    </div>
     {{#each posters}}
         <li class="list-group-item">
             <h1>{{this.name}}</h1>
-            <h2>Cost:{{this.cost}}</h2>
+            <h2>Cost: {{divide this.cost 100}}</h2>
+            <div>Category: {{this.category.name}}</div>
             <div>{{this.description}}</div>
+            <a href="posters/update/{{this.id}}" class="btn btn-primary">Edit</a>
+            <a href ="posters/delete/{{this.id}}" class="btn btn-danger">Delete</a>
+
         </li>
     {{/each}}
 </ul>

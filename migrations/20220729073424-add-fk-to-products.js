@@ -15,7 +15,20 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return null;
+  return db.addColumn('products','category_id',{
+    type:'int',
+    unsigned:true,
+    notNull:true,
+    foreignKey:{
+      name:'product_category_fk',
+      table:'categories',
+      mapping:'id',
+      rules:{
+        onDelete:'cascade',
+        onUpdate:'restrict'
+      }
+    }
+  });
 };
 
 exports.down = function(db) {
