@@ -8,6 +8,7 @@
         Are you sure you want to delete {{poster.name}}?
     </div>
     <a href="/posters" class="btn btn-success">Cancel</a>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     <input type="submit" class="btn btn-danger my-3" value="Confirm"/>
 </form>
 

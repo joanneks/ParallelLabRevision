@@ -1,9 +1,10 @@
 const express = require('express');
 const { Poster, Category, Tag } = require('../models');
 const { createPosterForm, bootstrapField } = require('../forms')
+const {checkIfAuthenticated} = require('../middlewares')
 const router = express.Router();
 
-router.get('/', async function(req,res){
+router.get('/', checkIfAuthenticated, async function(req,res){
     // SELECT * FROM posters;rn [category.get('id').categry.get('name')]
     const posters = await Poster.collection().fetch({
         withRelated: ['category','tags']
@@ -14,7 +15,7 @@ router.get('/', async function(req,res){
     });
 })
 
-router.get('/create', async function(req,res){
+router.get('/create', checkIfAuthenticated, async function(req,res){
     const categories = await Category.fetchAll().map(category=>{
         return [category.get('id'),category.get('name')];
     })
@@ -23,11 +24,14 @@ router.get('/create', async function(req,res){
     })
     const form = createPosterForm(categories,tags);
     res.render('posters/create', {
-        'form': form.toHTML(bootstrapField)
+        'form': form.toHTML(bootstrapField),
+        'cloudinaryName':process.env.CLOUDINARY_NAME,
+        'cloudinaryApiKey':process.env.CLOUDINARY_API_KEY,
+        'cloudinaryPreset':process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
-router.post('/create', async function(req,res){
+router.post('/create', checkIfAuthenticated, async function(req,res){
     const categories = await Category.fetchAll().map(category=>{
         return [category.get('id'),category.get('name')];
     })
@@ -45,6 +49,7 @@ router.post('/create', async function(req,res){
             poster.set('cost', form.data.cost);
             poster.set('description', form.data.description)
             poster.set('category_id',form.data.category_id)
+            poster.set('image_url',form.data.image_url)
             await poster.save();  // save the data into the database
 
             if (form.data.tags) {
@@ -68,7 +73,7 @@ router.post('/create', async function(req,res){
         }
     })
 })
-router.get('/update/:poster_id', async function(req,res){
+router.get('/update/:poster_id', checkIfAuthenticated, async function(req,res){
     const poster = await Poster.where({
         'id':req.params.poster_id
     }).fetch({
@@ -88,6 +93,7 @@ router.get('/update/:poster_id', async function(req,res){
     posterForm.fields.cost.value = poster.get('cost');
     posterForm.fields.description.value = poster.get('description');
     posterForm.fields.category_id.value = poster.get('category_id');
+    posterForm.fields.image_url.value = poster.get('image_url');
 
     // fill in the multi-select for tags
     // product.related('tags') will return an array of tag objects
@@ -97,11 +103,14 @@ router.get('/update/:poster_id', async function(req,res){
 
     res.render('posters/update',{
         'form':posterForm.toHTML(bootstrapField),
-        'poster': poster.toJSON()
+        'poster': poster.toJSON(),
+        'cloudinaryName':process.env.CLOUDINARY_NAME,
+        'cloudinaryApiKey':process.env.CLOUDINARY_API_KEY,
+        'cloudinaryPreset':process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
-router.post('/update/:poster_id',async function(req,res){
+router.post('/update/:poster_id', checkIfAuthenticated, async function(req,res){
     //fetch all categories
     const categories = await Category.fetchAll().map(category=>{
         return[category.get('id'),category.get('name')]

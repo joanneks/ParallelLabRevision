@@ -26,7 +26,18 @@
         </div>
         {{/each}}
       {{/if}}
+      <div>
+        {{#if user}}
+          <h3 style="display:inline-block"> Hi {{this.user.username}}</h1>
+          <a href="/users/logout" class="btn btn-danger my-3">Logout</a>
+          {{!-- {{else}}
+          <h3> Hi Stranger</h1>
+          <a href="/users/login" class="btn btn-primary my-3">Login</a> --}}
+        {{/if}}
+      </div>
         {{#block 'content'}}{{/block}}
+        
+        {{#block 'js'}}{{/block}}
     </div>
   </body>
 </html>

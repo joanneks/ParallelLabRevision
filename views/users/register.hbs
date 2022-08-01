@@ -3,6 +3,7 @@
         <h1>Register New User Account</h1>
         <form method="POST">
             {{{form}}}
+            <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
             <input type="submit" class="btn btn-primary my-3"/>
         </form>
 

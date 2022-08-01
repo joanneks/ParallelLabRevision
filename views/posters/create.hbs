@@ -4,8 +4,53 @@
 <h1>Create New Poster</h1>
 <form method="POST">
     {{{form}}}
+    <a href="#" class="btn btn-primary" id="upload_widget">Upload Image</a>
+    <img src="" style="display:none" id="uploaded_image"/>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     <input type="submit" class="btn btn-primary my-3"/>
 </form>
+
+{{/block}}
+
+{{#block 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+
+<script>
+    function generateSignature(callback,params_to_sign){
+        axios.get('/cloudinary/sign',{
+            'params':{
+                'params_to_sign':params_to_sign
+            }
+        }).then(function(response){
+            // callback is given by cloudinary
+            callback(response.data)
+        })
+    }
+</script>
+<script>
+    //display the widget
+    const myWidget = cloudinary.createUploadWidget({
+        cloudName:"{{cloudinaryName}}",
+        apiKey:"{{cloudinaryApiKey}}",
+        uploadPreset:"{{cloudinaryPreset}}",
+        uploadSignature: generateSignature
+    },
+    // this (error,result) is a callback function
+    (error,result)=>{
+        if (!error && result.event == "success") {
+        document.querySelector('#id_image_url').value = result.info.url;
+        document.querySelector("#uploaded_image").src = result.info.url;
+        document.querySelector('#uploaded_image').style.display='block';
+    }
+    })
+
+    //add event listener to upload button
+    document.querySelector("#upload_widget").addEventListener('click', function(e){
+        e.preventDefault();
+        myWidget.open();
+    })
+</script>
 
 {{/block}}
 
