@@ -4,6 +4,12 @@
     <div class="container">
         <a href="posters/create" class="btn btn-primary">Create</a>
     </div>
+    <div>
+        <form method="GET">
+            {{{form}}}
+            <input type="submit" class="btn btn-primary mt-3" value="Search"/>
+        </form>
+    </div>
 <ul class="list-group-item">
     {{#each posters}}
         <li class="list-group-item">
@@ -20,6 +26,9 @@
             </div>
             <a href="posters/update/{{this.id}}" class="btn btn-primary">Edit</a>
             <a href ="posters/delete/{{this.id}}" class="btn btn-danger">Delete</a>
+            <div>
+                <a href="/cart/{{this.id}}/add" class="btn btn-primary">Add To Cart</a>
+            </div>
 
         </li>
     {{/each}}

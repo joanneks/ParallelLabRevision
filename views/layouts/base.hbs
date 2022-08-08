@@ -1,43 +1,72 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <div class="container">
-      {{#if success_messages}}
-        {{#each success_messages}}
-        <div class="alert alert-success">
-          {{this}}
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <title>Hello, world!</title>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- A grey horizontal navbar that becomes vertical on small screens -->
+    <nav class="navbar navbar-expand-sm bg-light">
+
+      <div class="container-fluid">
+        <!-- Links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/posters">Posters</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link 2</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link 3</a>
+          </li>
+        </ul>
+        <div>
+          {{#if user}}
+          Hi, {{user.username}}
+          <a href="/cart" class="btn btn-primary btn-sm">Cart</a>
+          <a href="/users/logout" class="btn btn-danger btn-sm">Logout</a>
+          {{else}}
+
+          Hi Guest,
+          <a href="/users/login" class="btn btn-sm btn-success">Login</a>
+          {{/if}}
         </div>
-        {{/each}}
-      {{/if}}
-      {{#if error_messages}}
-        {{#each error_messages}}
-        <div class="alert alert-danger">
-          {{this}}
-        </div>
-        {{/each}}
-      {{/if}}
-      <div>
-        {{#if user}}
-          <h3 style="display:inline-block"> Hi {{this.user.username}}</h1>
-          <a href="/users/logout" class="btn btn-danger my-3">Logout</a>
-          {{!-- {{else}}
-          <h3> Hi Stranger</h1>
-          <a href="/users/login" class="btn btn-primary my-3">Login</a> --}}
-        {{/if}}
       </div>
-        {{#block 'content'}}{{/block}}
-        
-        {{#block 'js'}}{{/block}}
+
+    </nav>
+
+    {{#if success_messages}}
+    {{#each success_messages}}
+    <div class="alert alert-success">
+      {{this}}
     </div>
-  </body>
+    {{/each}}
+    {{/if}}
+    {{#if error_messages}}
+    {{#each error_messages}}
+    <div class="alert alert-danger">
+      {{this}}
+    </div>
+    {{/each}}
+    {{/if}}
+    <div>
+
+    {{#block 'content'}}{{/block}}
+
+    {{#block 'js'}}{{/block}}
+  </div>
+</body>
+
 </html>

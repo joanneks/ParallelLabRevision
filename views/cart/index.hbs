@@ -1,0 +1,34 @@
+{{#extends 'base'}}
+{{#block 'content'}}
+<h1>Your Cart</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name:</th>
+            <th>Category</th>
+            <th>Cost</th>
+            <th>Quantity:</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each cartItems}}
+        <tr>
+            <td>{{this.poster.name}}</td>
+            <td>{{this.poster.category.name}}</td>
+            <td>{{this.poster.cost}}</td>
+            <form method="POST" action="/cart/{{this.product_id}}/update">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}"/>
+                <td>
+                    <div>
+                        <input type="text" style="width:30px" value="{{this.quantity}}" name="newQuantity"/>
+                        <input type="submit" class="btn btn-primary btn-sm"/>
+            <a href="/cart/{{this.product_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </form>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/block}}
+{{/extends}}

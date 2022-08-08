@@ -59,6 +59,37 @@ const createPosterForm = function(categories,tags){
     })
 }
 
+const createSearchForm = function (categories,tags){
+    return forms.create({
+        'name':fields.string({
+            required:false,
+            errorAfterField:true
+        }),
+        'min_cost':fields.number({
+            required:false,
+            errorAfterField:true,
+            validators:[validators.integer()]
+        }),
+        'max_cost':fields.number({
+            required:false,
+            errorAfterField:true,
+            validators:[validators.integer()]
+        }),
+        'category_id':fields.string({
+            required: false,
+            errorAfterField:true,
+            choices:categories,
+            widget:widgets.select()
+        }),
+        'tags':fields.string({
+            required:false,
+            errorAfterField:true,
+            choices:tags,
+            widget:widgets.multipleSelect()
+        })
+    })
+}
+
 const createUserForm = function(){
     return forms.create({
         'username':fields.string({
@@ -94,4 +125,4 @@ const createUserLogin = function (){
     })
 }
 
-module.exports = {createPosterForm, createUserForm, createUserLogin, bootstrapField}
+module.exports = {createPosterForm, createSearchForm, createUserForm, createUserLogin, bootstrapField}

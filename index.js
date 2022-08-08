@@ -30,10 +30,11 @@ app.use(
     const productRoutes = require('./routes/products');
     const userRoutes = require('./routes/users')
     const cloudinaryRoutes = require('./routes/cloudinary')
+    const cartRoutes = require('./routes/cart')
 
     app.use(session({
         store: new FileStore(),
-        secret:'keyboard cat',
+        secret:process.env.SESSION_SECRET,
         resave:false,
         saveUninitialized:true
     }))
@@ -59,9 +60,10 @@ app.use(
     })
     
     app.use('/', landingRoutes);
-    app.use('/posters', productRoutes)
-    app.use('/users', userRoutes)
-    app.use('/cloudinary',cloudinaryRoutes)
+    app.use('/posters', productRoutes);
+    app.use('/users', userRoutes);
+    app.use('/cloudinary',cloudinaryRoutes);
+    app.use('/cart',cartRoutes);
 })();
 
 app.listen(3000, function(){

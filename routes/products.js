@@ -1,28 +1,79 @@
 const express = require('express');
 const { Poster, Category, Tag } = require('../models');
-const { createPosterForm, bootstrapField } = require('../forms')
+const { createPosterForm, createSearchForm, bootstrapField } = require('../forms')
 const {checkIfAuthenticated} = require('../middlewares')
 const router = express.Router();
+const dataLayer = require('../dal/products')
 
 router.get('/', checkIfAuthenticated, async function(req,res){
     // SELECT * FROM posters;rn [category.get('id').categry.get('name')]
-    const posters = await Poster.collection().fetch({
-        withRelated: ['category','tags']
-    });
+    // const posters = await Poster.collection().fetch({
+    //     withRelated: ['category','tags']
+    // });
     
-    res.render('posters/index',{
-        'posters': posters.toJSON()
-    });
+    // const categories = await Category.fetchAll().map(category=>{
+    //     return [category.get('id'),category.get('name')];
+    // })
+    const categories = await dataLayer.getAllCategories();
+    categories.unshift([0,'---All Categories---'])
+    // const tags = await (await Tag.fetchAll()).map(tag=>{
+    //     return [tag.get('id'),tag.get('name')]
+    // })
+    const tags = await dataLayer.getAllTags();
+    
+    const searchForm = createSearchForm(categories,tags);
+    let query = Poster.collection();
+    searchForm.handle(req,{
+        'success': async function (form){
+            if(form.data.name){
+                console.log(form.data.name)
+                query.where('name','like','%'+form.data.name+'%')
+            }
+            if(form.data.min_cost){
+                query.where('cost','>=',form.data.min_cost)
+            }
+            if(form.data.max_cost){
+                query.where('cost','<=',form.data.max_cost)
+            }
+            if(form.data.category_id && form.data.category_id!=0){
+                query.where('category_id','=',form.data.category_id)
+            }
+            if(form.data.tags){
+                query.query('join','products_tags','products.id','product_id').where(
+                    'tag_id','in',form.data.tags.split(',')
+                )
+            }
+
+            const posters = await query.fetch({
+                withRelated:['tags','category']
+            })
+            res.render('posters/index',{
+                posters:posters.toJSON(),
+                form:searchForm.toHTML(bootstrapField)
+            })
+
+        },
+        'empty': async function (){
+            const posters = await query.fetch({
+                withRelated:['tags','category']
+            })
+            res.render('posters/index',{
+                posters:posters.toJSON(),
+                form:searchForm.toHTML(bootstrapField)
+            })
+        },
+        'error': function (){
+
+        }
+    })
+
 })
 
 router.get('/create', checkIfAuthenticated, async function(req,res){
-    const categories = await Category.fetchAll().map(category=>{
-        return [category.get('id'),category.get('name')];
-    })
-    const tags = await (await Tag.fetchAll()).map(tag=>{
-        return [tag.get('id'),tag.get('name')]
-    })
+    const categories = await dataLayer.getAllCategories();
+    const tags = await dataLayer.getAllTags();
     const form = createPosterForm(categories,tags);
+
     res.render('posters/create', {
         'form': form.toHTML(bootstrapField),
         'cloudinaryName':process.env.CLOUDINARY_NAME,
@@ -32,12 +83,8 @@ router.get('/create', checkIfAuthenticated, async function(req,res){
 })
 
 router.post('/create', checkIfAuthenticated, async function(req,res){
-    const categories = await Category.fetchAll().map(category=>{
-        return [category.get('id'),category.get('name')];
-    })
-    const tags = await Tag.fetchAll().map(tag=>{
-        return [tag.get('id'),tag.get('name')]
-    });
+    const categories = await dataLayer.getAllCategories();
+    const tags = await dataLayer.getAllTags();
     
     const form = createPosterForm(categories,tags);
     form.handle(req, {
@@ -74,18 +121,15 @@ router.post('/create', checkIfAuthenticated, async function(req,res){
     })
 })
 router.get('/update/:poster_id', checkIfAuthenticated, async function(req,res){
-    const poster = await Poster.where({
-        'id':req.params.poster_id
-    }).fetch({
-        require:true,
-        withRelated:'tags'
-    })
-    const categories = await Category.fetchAll().map(category=>{
-        return[category.get('id'),category.get('name')];
-    });
-    const tags = await (await Tag.fetchAll()).map(tag=>{
-        return[tag.get('id'),tag.get('name')]
-    })
+    // const poster = await Poster.where({
+    //     'id':req.params.poster_id
+    // }).fetch({
+    //     require:true,
+    //     withRelated:['category','tags']
+    // })
+    const poster = await dataLayer.getPosterbyId(req.params.poster_id)
+    const categories = await dataLayer.getAllCategories();
+    const tags = await dataLayer.getAllTags();
     const posterForm = createPosterForm(categories,tags);
 
     // 3. fill the form with the previous values of the product
@@ -112,20 +156,12 @@ router.get('/update/:poster_id', checkIfAuthenticated, async function(req,res){
 
 router.post('/update/:poster_id', checkIfAuthenticated, async function(req,res){
     //fetch all categories
-    const categories = await Category.fetchAll().map(category=>{
-        return[category.get('id'),category.get('name')]
-    })
+    const categories = await dataLayer.getAllCategories();
     
     //fetch the product we want to update
-    const poster = await Poster.where({
-        'id':req.params.poster_id
-    }).fetch({
-        required:true,
-        withRelated:'tags'
-    })
-    const tags = await Tag.fetchAll().map(tag=>{
-        return [tag.get('id'),tag.get('name')]
-    })
+    
+    const poster = await dataLayer.getPosterbyId(req.params.poster_id)
+    const tags = await dataLayer.getAllTags();
     const posterForm = createPosterForm(categories, tags)
 
     posterForm.handle(req,{
@@ -169,22 +205,20 @@ router.post('/update/:poster_id', checkIfAuthenticated, async function(req,res){
 })
 
 router.get('/delete/:poster_id',async function(req,res){
-    const poster = await Poster.where({
-        id:req.params.poster_id
-    }).fetch({
-        require:true
-    })
+    // const poster = await Poster.where({
+    //     id:req.params.poster_id
+    // }).fetch({
+    //     require:true,
+    //     withRelated:['category','tags']
+    // })
+    const poster = await dataLayer.getPosterbyId(req.params.poster_id);
     res.render('posters/delete',{
         poster: poster.toJSON()
     })
 })
 
 router.post('/delete/:poster_id',async function(req,res){
-    const poster = await Poster.where({
-        id:req.params.poster_id
-    }).fetch({
-        require:true
-    })
+    const poster = await dataLayer.getPosterbyId(req.params.poster_id)
     await poster.destroy()
     res.redirect('/posters')
 })
